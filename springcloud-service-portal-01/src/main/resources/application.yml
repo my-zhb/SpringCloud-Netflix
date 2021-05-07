@@ -1,0 +1,19 @@
+server:
+  port: 8080
+eureka:
+  instance:
+    #每间隔2s，向服务端发送一次心跳，证明自己存活
+    lease-renewal-interval-in-seconds: 2
+    #告诉服务端，如果我10s没有像你发送心跳，就代表我故障了，将我踢掉
+    lease-expiration-duration-in-seconds: 10
+    #告诉服务端，服务实例以ip作为链接，而不是机器名
+    prefer-ip-address: true
+    #告诉服务端，服务实例的名称
+    instance-id: springcloud-service-protal-01
+  client:
+    service-url:
+      #指定服务注册中心的位置
+      defaultZone: http://111.231.207.228:8761/eureka,http://111.231.207.228:8762/eureka,http://111.231.207.228:8763/eureka
+spring:
+  application:
+    name: springcloud-service-protal-01
