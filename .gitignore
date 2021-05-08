@@ -1,3 +1,20 @@
+# Sensitive or high-churn files
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+.idea/
+
+# Sensitive or high-churn files
+springcloud-servoce-commons-01/target/
+springcloud-servoce-eureka-01/target/
+springcloud-servoce-goods-01/target/
+springcloud-servoce-parent-01/target/
+springcloud-servoce-portal-01/target/
+
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
