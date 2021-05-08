@@ -1,23 +1,25 @@
-# Sensitive or high-churn files
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-.idea/**/dbnavigator.xml
-.idea/
+/target/
+!.mvn/wrapper/maven-wrapper.jar
 
-# Sensitive or high-churn files
-springcloud-servoce-commons-01/target/
-springcloud-servoce-eureka-01/target/
-springcloud-servoce-goods-01/target/
-springcloud-servoce-parent-01/target/
-springcloud-servoce-portal-01/target/
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
 
-# Sensitive or high-churn files
-springcloud-servoce-commons-01/springcloud-servoce-commons-01.iml
-springcloud-servoce-eureka-01/springcloud-servoce-eureka-01.iml
-springcloud-servoce-goods-01/springcloud-servoce-goods-01.iml
-springcloud-servoce-parent-01/springcloud-servoce-parent-01.iml
-springcloud-servoce-portal-01/springcloud-servoce-portal-01.iml
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
