@@ -9,11 +9,7 @@
 .idea/
 
 # Sensitive or high-churn files
-springcloud-servoce-commons-01/target/
-springcloud-servoce-eureka-01/target/
-springcloud-servoce-goods-01/target/
-springcloud-servoce-parent-01/target/
-springcloud-servoce-portal-01/target/
+*target
 
 /target/
 !.mvn/wrapper/maven-wrapper.jar
