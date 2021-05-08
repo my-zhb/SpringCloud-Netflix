@@ -13,17 +13,8 @@
     </parent>
 
 
-    <groupId>com.july.springcloud</groupId>
     <artifactId>springcloud-service-commons-01</artifactId>
     <version>1.0.0</version>
-    <dependencies>
-        <!--引入lombok-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.10</version>
-        </dependency>
-    </dependencies>
 
 
 </project>
