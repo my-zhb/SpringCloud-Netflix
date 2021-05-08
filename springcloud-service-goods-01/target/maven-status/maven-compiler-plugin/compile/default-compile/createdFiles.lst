@@ -1,0 +1,5 @@
+com\july\springcloud\mapper\GoodsMapper.class
+com\july\springcloud\controller\GoodsController.class
+com\july\springcloud\service\GoodsService.class
+com\july\springcloud\service\impl\GoodsServiceImpl.class
+com\july\springcloud\GoodsApplication.class
