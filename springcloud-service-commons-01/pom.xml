@@ -16,5 +16,11 @@
     <artifactId>springcloud-service-commons-01</artifactId>
     <version>1.0.0</version>
 
-
+    <dependencies>
+        <!-- 引入Fegin依赖-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+    </dependencies>
 </project>

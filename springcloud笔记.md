@@ -139,7 +139,11 @@ eureka:
 	      defaultZone: http://eureka8761:8761/eureka,http://eureka8762:87632/eureka
 	```
 
+> 问题
 
+1. Eureka宕机了接口还能调用嘛？
+
+   只要服务没有挂掉，还能调用。因为服务注册到Eureka之后会被缓存到本地，所以Eureka宕机还是可以继续调用的。
 
 ## Spring Cloud Ribbon
 
@@ -185,6 +189,25 @@ private class RibbonConfig{
 }
 ```
 
+> 自定义负载均衡算法
+
+需要继承`AbstractLoadBalancerRule`实现 其中的`choose`方法即可
+
+```java
+public class MyIRule extends AbstractLoadBalancerRule {
+    @Override
+    public void initWithNiwsConfig(IClientConfig iClientConfig) {
+
+    }
+
+    @Override
+    public Server choose(Object key) {
+        //具体实现
+        return null;
+    }
+}
+```
+
 
 
 ## Spring Cloud Feign
@@ -192,4 +215,54 @@ private class RibbonConfig{
 > Feign是什么？
 
 `Fegin`是Netflix公司开发的一个声明式的REST调用客户端（`调用远程的restful风格的http接口组件`）。`Spring Cloud Feign`对`Ribbon`负载均衡进行了简化，在其基础上进行了进一步的封装，在配置上进行了简化，它是一种声明式的调用方式，它的使用方法是定义一个接口，然后在接口上添加注解，使其支持了`Spring MVC`标准注解和`HttpMessageConverters`,`Fegin`可以与`Eureka`和`Ribbon`组合使用以支持负载均衡。
+
+> 怎么使用Fegin
+
+所需架包
+
+```xml
+    <dependencies>
+        <!-- 引入Fegin依赖-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+    </dependencies>
+```
+
+代码如下
+
+```java
+/**开启Fegin,FeignClient("服务的名称")**/
+@FeignClient("SPRINGCLOUD-SERVICE-GOODS-01")
+public interface GoodsClient {
+
+    @RequestMapping(value = "/service/goods")
+    public ResultObject goods();
+}
+```
+
+在消费模块启动类加上`@EnableFeignClients`开启对`Fegin`的支持
+
+在`controller`引入`GoodsClient`,即可完成。
+
+```java
+@Resource
+private GoodsClient goodsClient;
+
+@RequestMapping(value = "/service/goods", method = RequestMethod.GET)
+public ResultObject goodsFegin() {
+   System.out.println("/service/goodsFegin -->8080 被执行..........");
+   ResultObject goods = goodsClient.goods();
+   return new ResultObject(Constant.ZERO, "查询成功", goods);
+}
+```
+
+
+
+## Spring Cloud Hystrix
+
+> Hystrix时什么？
+
+`Hystrix`被称为熔断器，它是一个用于处理分布式系统的`延迟`和`容错`的开源库，在分布式系统里，许多服务之间通过远程调用实现信息交互，调用时不可避免会出现调用失败，比如超速、异常等原因导致调用失败，`Hystrix`能够保证在一个服务出现故障的情况下，不会导致整体服务失败，避免级联故障（服务雪崩），以提高分布式系统的弹性。
 

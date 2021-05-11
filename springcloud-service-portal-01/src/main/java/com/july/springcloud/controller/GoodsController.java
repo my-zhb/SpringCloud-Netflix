@@ -4,6 +4,7 @@ package com.july.springcloud.controller;
 import com.july.springcloud.constants.Constant;
 import com.july.springcloud.model.Goods;
 import com.july.springcloud.model.ResultObject;
+import com.july.springcloud.service.GoodsClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -14,13 +15,34 @@ import java.util.List;
 @RestController
 public class GoodsController {
 
-    //普通方式调用
+    /**
+     * 普通方式调用
+     */
     private static final  String GOODS_SERVER_URL="http://localhost:9100/service/goods";
-    //使用Ribbon调用
+    /**
+     * 使用Ribbon调用
+     */
     private static final  String GOODS_SERVER_URL_RIBBON="http://springcloud-service-goods-01/service/goods";
+    /**
+     * 使用Fegin 调用
+     */
+    @Resource
+    private GoodsClient goodsClient;
 
     @Resource
     private RestTemplate restTemplate;
+
+    /**
+     * 查询所有商品
+     *
+     * @return
+     */
+    @RequestMapping(value = "/service/goodsFegin", method = RequestMethod.GET)
+    public ResultObject goodsFegin() {
+        System.out.println("/service/goodsFegin -->8080 被执行..........");
+        ResultObject goods = goodsClient.goods();
+        return new ResultObject(Constant.ZERO, "查询成功", goods);
+    }
 
     /**
      * 查询所有商品

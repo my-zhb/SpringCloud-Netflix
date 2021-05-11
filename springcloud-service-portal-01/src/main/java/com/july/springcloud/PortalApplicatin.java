@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * @ProjectName: 01
@@ -16,7 +17,10 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
  * @Version: 1.0
  */
 @Slf4j
+/**开启对Eureka的支持**/
 @EnableEurekaClient
+/**开启对Fegin的支持**/
+@EnableFeignClients
 @SpringBootApplication
 public class PortalApplicatin {
     public static void main(String[] args) {
