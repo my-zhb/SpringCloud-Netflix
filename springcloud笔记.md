@@ -1,6 +1,6 @@
 # SpringCloud Netflix
 
-## Eureka
+## Spring Cloud Eureka
 
 > Eureka是什么？
 
@@ -70,15 +70,15 @@ eureka:
 	127.0.0.1       eureka8762
 	127.0.0.1       eureka8763
 	```
-	
+
 3. 配置idea启动项
 
 	```
---spring.profiles.active=eureka8761
+	--spring.profiles.active=eureka8761
 	--spring.profiles.active=eureka8762
---spring.profiles.active=eureka8763
+	--spring.profiles.active=eureka8763
 	```
-	
+
 	![image-20210503225857849](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210503225857.png)
 	
 	> 8761配置
@@ -138,13 +138,58 @@ eureka:
 	      #指定服务注册中心的位置
 	      defaultZone: http://eureka8761:8761/eureka,http://eureka8762:87632/eureka
 	```
-	
-	
 
 
 
-## Ribbon
+## Spring Cloud Ribbon
 
 > Ribbon是什么？
 
 `Ribbon`是一个基于HTTP和TCP的客户端负载均衡器，当使用`Ribbon`对服务进行访问的时候，它会扩展`Eureka`客户端的服务发现功能，实现从`Eureka`注册中心中获取服务端列表，并通过`Eureka`客户端来确定是否已经启动。`Ribbon`是在`Eureka`客户端服务发现的基础上，实现了对服务实例的选择策略，从而实现对服务的负载均衡消费。
+
+> Ribbon 负载均衡策略
+
+`IRule`负载均衡实现，如图：
+
+![image-20210511153832961](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210511153842.png)
+
+
+
+|          负载均衡实现           |                             策略                             |
+| :-----------------------------: | :----------------------------------------------------------: |
+|           RandomRule            |                             随机                             |
+|         RoundRobinRule          |                             轮询                             |
+|    AuailabilityFilteringRule    | 先过滤掉由于多次访问故障的服务，以及并发连接数超过阈值的服务，然后对剩下的服务进行轮询策略访问。 |
+|    WeightedResponseTimeRule     | 根据平均响应时间计算所有服务的权重，响应时间越快服务权重越大被选择的概率越高，如服务刚启动时统计信息不足，则使用`RoundRobinRule`策略，待统计信息足够是切换回`WeightedResponseTimeRule`策略 |
+|            RetryRule            | 先按照`RoundRobinRule`策略分发，如果分发到的服务不能访问，则在指定时间内进行重试，然后到分发其他可以的服务 |
+|        BestAvailableRule        | 先过滤掉由于多次访问故障的服务，以及并发连接数超过阈值的服务，然后选择一个并发量最小的服务 |
+| ZoneAvoidanceRule（新版本默认） | 综合判断服务节点所在区域的性能和服务节点的可用性，来决定选择那个服务器 |
+
+
+
+它会默认调用`ILoadBalancer`类，然后选择进入`chooseServer`方法，实现是在`ZoneAwareLoadBalancer`里面，默认走的是`ZoneAvoidanceRule`规则。
+
+![image-20210511154247406](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210511154248.png)
+
+> 切换Ribbon的负载均衡
+
+```java
+@Configuration
+private class RibbonConfig{
+    
+    @Bean
+    public IRule iRule(){
+        //采用轮询方式负载均衡
+        return new RoundRobinRule();
+    }
+}
+```
+
+
+
+## Spring Cloud Feign
+
+> Feign是什么？
+
+`Fegin`是Netflix公司开发的一个声明式的REST调用客户端（`调用远程的restful风格的http接口组件`）。`Spring Cloud Feign`对`Ribbon`负载均衡进行了简化，在其基础上进行了进一步的封装，在配置上进行了简化，它是一种声明式的调用方式，它的使用方法是定义一个接口，然后在接口上添加注解，使其支持了`Spring MVC`标准注解和`HttpMessageConverters`,`Fegin`可以与`Eureka`和`Ribbon`组合使用以支持负载均衡。
+
