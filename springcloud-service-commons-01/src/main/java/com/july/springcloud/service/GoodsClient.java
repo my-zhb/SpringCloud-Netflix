@@ -20,4 +20,5 @@ public interface GoodsClient {
 
     @RequestMapping(value = "/service/goods")
     public ResultObject goods();
+
 }
