@@ -175,7 +175,7 @@ eureka:
 
 ![image-20210511154247406](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210511154248.png)
 
-> 切换Ribbon的负载均衡
+### 切换Ribbon的负载均衡
 
 ```java
 @Configuration
@@ -189,7 +189,7 @@ private class RibbonConfig{
 }
 ```
 
-> 自定义负载均衡算法
+### 自定义负载均衡算法
 
 需要继承`AbstractLoadBalancerRule`实现 其中的`choose`方法即可
 
@@ -268,8 +268,116 @@ public ResultObject goodsFegin() {
 
 所以当某个服务单元发生故障之后，通过熔断器的故障监控，向调用方返回一个符合预期的、可处理的备选响应（`FallBack`也叫服务降级），而不是长时间的占用，从而避免了故障在分布式系统中的蔓延，甚至雪崩。
 
-> Hystrix基本使用
+### Hystrix基本使用
+
+引入依赖
+
+```xml
+<!-- Hystrix依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+</dependency>
+```
+
+在springboot启动类加上`@EnableHystrix`或者`@SpringBootApplication`注解
 
 ```java
+@Slf4j
+/** 开启对hystrix的服务熔断降级支持**/
+@EnableHystrix
+/**开启对Eureka的支持**/
+@EnableEurekaClient
+/**开启对Fegin的支持**/
+@EnableFeignClients
+@SpringBootApplication
+/**
+ * @SpringCloudApplication 注解 包含了3个：
+ * @SpringBootApplication springboot启动
+ * @EnableDiscoveryClient 这个注解等价于@EnableEurekaClient 开启对Eureka
+ * @EnableCircuitBreaker 这个注解等价于@EnableHystrix 开放hystrix
+ */
+public class PortalApplicatin {
+    public static void main(String[] args) {
+        SpringApplication.run(PortalApplicatin.class,args);
+        log.info("portal服务（消费者）已启动，端口：8000");
+    }
+}
 ```
+
+在对应的方法上加上`@HystrixCommand(fallbackMethod = "fallback")`注解，其中`fallback`是自己定义的其他方法，表示如果服务出现错误或者超时，就进去其方法。
+
+```java
+ /**
+     * Hystrix 查询所有商品
+     *
+     * @return
+     */
+    @HystrixCommand(fallbackMethod = "fallback")
+    @RequestMapping(value = "/service/goodsHystrix", method = RequestMethod.GET)
+    public ResultObject goodsHystrix() {
+        System.out.println("/service/goodsHystrix -->8080 被执行..........");
+        ResultObject goods = goodsClient.goods();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new ResultObject(Constant.ZERO, "查询成功", goods);
+    }
+
+    /**
+     * 服务降级了
+     * @return
+     */
+    public ResultObject fallback(){
+        return new ResultObject(Constant.ONE,"服务降级了...");
+    }
+```
+
+`Hystrix`和`ribbon`的超时时间配置
+
+这里`Hystrix`和`ribbon`的超时时间都必须配置，不然他是以最小的时间算，`Hystrix`和`ribbon`的超时时间都是`1秒`
+
+```yml
+# 配置Hystrix的超时时间
+hystrix:
+  command:
+    default: #也可以针对多个服务
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 4000
+
+# 配置ribbon的超时时间
+ribbon:
+  ReadTimeout: 6000
+  ConnectTimeout: 3000
+```
+
+### Hystrix 的异常处理
+
+指定方法加上`Throwable`参数
+
+```java
+public ResultObject fallback(Throwable throwable){
+     throwable.printStackTrace();
+     System.out.println(throwable.getMessage());
+     return new ResultObject(Constant.ONE,"服务降级了...");
+}
+```
+
+### Hystrix 忽略异常
+
+在`@HystrixCommand`,加入`ignoreExceptions = Throwable.class`
+
+```
+@HystrixCommand(fallbackMethod = "fallback",ignoreExceptions = Throwable.class)
+```
+
+### Hystrix 限流
+
+限流就是限制某个微服务的使用量（可用线程数、信号量）
 
