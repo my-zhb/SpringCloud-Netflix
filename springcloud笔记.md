@@ -381,3 +381,56 @@ public ResultObject fallback(Throwable throwable){
 
 限流就是限制某个微服务的使用量（可用线程数、信号量）
 
+`threadPoolKey`是线程池唯一表示，`Hystrix`会使用表示来计数，看线程占用是否超过了，超过了就会直接降级该次调用。
+
+```java
+@HystrixCommand(fallbackMethod = "fallback",
+        //线程池唯一标识
+		threadPoolKey = "goods",
+		threadPoolProperties = {
+        	//可用线程数量（这里设置的是2个）
+         	@HystrixProperty(name = "coreSize", value = "2"),
+         	//队列 （这里设置的是1 所以可以方一个），如果第4个就限流了
+          	@HystrixProperty(name = "maxQueueSize", value = "1")
+   		}
+)
+```
+
+
+
+### Feign整合Hystrix
+
+在`@FeignClient`中加入`fallback = GoodsClientFallBack.class`,其中`GoodsClientFallBack`自定义的
+
+```java
+/**开启Fegin,FeignClient("服务的名称")**/
+@FeignClient(value = "SPRINGCLOUD-SERVICE-GOODS-01",fallback = GoodsClientFallBack.class)
+public interface GoodsClient {
+    @RequestMapping(value = "/service/goods")
+    public ResultObject goods();
+}
+```
+
+`GoodsClientFallBack`实现`GoodsClient`,并实现其
+
+```java
+@Component
+public class GoodsClientFallBack implements GoodsClient{
+
+    //goods的备用方法，如果goods出现超时或者错误，进入此方法
+    @Override
+    public ResultObject goods() {
+        return new ResultObject(Constant.ONE,"fegin 服务降级");
+    }
+}
+```
+
+最后在配置文件开启开启fegin整合hystrix
+
+```yml
+# 开启fegin整合hystrix
+feign:
+  hystrix:
+    enabled: true
+```
+

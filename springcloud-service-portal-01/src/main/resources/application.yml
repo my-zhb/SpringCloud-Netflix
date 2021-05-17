@@ -32,3 +32,8 @@ hystrix:
 ribbon:
   ReadTimeout: 6000
   ConnectTimeout: 3000
+
+# 开启fegin整合hystrix
+feign:
+  hystrix:
+    enabled: true

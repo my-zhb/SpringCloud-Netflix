@@ -6,6 +6,7 @@ import com.july.springcloud.model.Goods;
 import com.july.springcloud.model.ResultObject;
 import com.july.springcloud.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -27,6 +28,13 @@ public class GoodsController {
     public ResultObject goods() {
         System.out.println("/service/goods -->9200 被执行..........");
         List<Goods> goodsList = goodsService.getAllGoods();
+        if(!CollectionUtils.isEmpty(goodsList)){
+            try {
+                Thread.sleep(7000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return new ResultObject(Constant.ZERO, "查询成功", goodsList);
     }
 
