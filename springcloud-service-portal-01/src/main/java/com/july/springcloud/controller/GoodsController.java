@@ -65,18 +65,22 @@ public class GoodsController {
      */
     @HystrixCommand(fallbackMethod = "fallback")
     @RequestMapping(value = "/service/goodsHystrix", method = RequestMethod.GET)
-    public ResultObject goodsHystrix() throws InterruptedException {
-        Thread.sleep(1500);
+    public ResultObject goodsHystrix() {
         System.out.println("/service/goodsHystrix -->8080 被执行..........");
         ResultObject goods = goodsClient.goods();
-        return new ResultObject(Constant.ZERO, "查询成功", null);
+        if(goods != null){
+            throw new RuntimeException("我出现异常了");
+        }
+        return new ResultObject(Constant.ZERO, "查询成功", goods);
     }
 
     /**
      * 服务降级了
      * @return
      */
-    public ResultObject fallback(){
+    public ResultObject fallback(Throwable throwable){
+        throwable.printStackTrace();
+        System.out.println(throwable.getMessage());
         return new ResultObject(Constant.ONE,"服务降级了...");
     }
 }

@@ -17,3 +17,18 @@ eureka:
 spring:
   application:
     name: springcloud-service-protal-01
+
+hystrix:
+  command:
+    default: #也可以针对多个服务
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 4000
+
+# 配置ribbon的超时时间
+ribbon:
+  ReadTimeout: 6000
+  ConnectTimeout: 3000
