@@ -268,7 +268,7 @@ public ResultObject goodsFegin() {
 
 所以当某个服务单元发生故障之后，通过熔断器的故障监控，向调用方返回一个符合预期的、可处理的备选响应（`FallBack`也叫服务降级），而不是长时间的占用，从而避免了故障在分布式系统中的蔓延，甚至雪崩。
 
-### Hystrix基本使用
+### Hystrix 基本使用
 
 引入依赖
 
@@ -357,7 +357,7 @@ ribbon:
   ConnectTimeout: 3000
 ```
 
-### Hystrix 的异常处理
+### Hystrix 异常处理
 
 指定方法加上`Throwable`参数
 
@@ -398,7 +398,9 @@ public ResultObject fallback(Throwable throwable){
 
 
 
-### Feign整合Hystrix
+### Hystrix 整合Feign
+
+> 没有处理异常
 
 在`@FeignClient`中加入`fallback = GoodsClientFallBack.class`,其中`GoodsClientFallBack`自定义的
 
@@ -411,7 +413,7 @@ public interface GoodsClient {
 }
 ```
 
-`GoodsClientFallBack`实现`GoodsClient`,并实现其
+`GoodsClientFallBack`实现`GoodsClient`,并实现其方法
 
 ```java
 @Component
@@ -434,3 +436,40 @@ feign:
     enabled: true
 ```
 
+> 获取异常信息
+
+在`@FeignClient`中加入`fallbackFactory = GoodsClientFallBack.class`,其中`GoodsClientFallBack`自定义的
+
+```java
+@FeignClient(value = "SPRINGCLOUD-SERVICE-GOODS-01",fallbackFactory = GoodsClientFallBack.class)
+public interface GoodsClient {
+    @RequestMapping(value = "/service/goods")
+    public ResultObject goods();
+}
+```
+
+`GoodsClientFallBack`实现`FallbackFactory<GoodsClient>`,并实现其方法
+
+```java
+@Component
+public class GoodsClientFallBack implements FallbackFactory<GoodsClient> {
+
+    @Override
+    public GoodsClient create(Throwable throwable) {
+        return  new GoodsClient(){
+            @Override
+            public ResultObject goods() {
+                String message = throwable.getMessage();
+                System.out.println("Fegin 远程调用出现错误" + message);
+                return new ResultObject(Constant.ONE,"服务异常!",message);
+            }
+        };
+    }
+}
+```
+
+
+
+### Hystrix Dashboard
+
+Hystrix仪表盘，就像汽车的仪表盘一样，实时显示汽车的各项数据，Hystrix仪表盘主要用来监控Hystrix的实时运行状态，通过它我们可以看到Hystrix的各项信息，从而快速发现系统中存在的问题进而解决问题。

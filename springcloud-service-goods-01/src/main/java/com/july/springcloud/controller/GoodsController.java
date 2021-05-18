@@ -25,15 +25,11 @@ public class GoodsController {
      * @return
      */
     @RequestMapping(value = "/service/goods", method = RequestMethod.GET)
-    public ResultObject goods() {
+    public ResultObject goods(){
         System.out.println("/service/goods -->9100 被执行..........");
         List<Goods> goodsList = goodsService.getAllGoods();
         if(!CollectionUtils.isEmpty(goodsList)){
-            try {
-                Thread.sleep(7000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            throw new RuntimeException("goods 1 error");
         }
         return new ResultObject(Constant.ZERO, "查询成功", goodsList);
     }

@@ -2,6 +2,7 @@ package com.july.springcloud.service;
 
 import com.july.springcloud.constants.Constant;
 import com.july.springcloud.model.ResultObject;
+import feign.hystrix.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,10 +16,17 @@ import org.springframework.stereotype.Component;
  * @Version: 1.0
  */
 @Component
-public class GoodsClientFallBack implements GoodsClient{
+public class GoodsClientFallBack implements FallbackFactory<GoodsClient> {
 
     @Override
-    public ResultObject goods() {
-        return new ResultObject(Constant.ONE,"fegin 服务降级");
+    public GoodsClient create(Throwable throwable) {
+        return  new GoodsClient(){
+            @Override
+            public ResultObject goods() {
+                String message = throwable.getMessage();
+                System.out.println("Fegin 远程调用出现错误" + message);
+                return new ResultObject(Constant.ONE,"服务异常!",message);
+            }
+        };
     }
 }

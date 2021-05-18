@@ -15,10 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @Version: 1.0
  */
 /**开启Fegin,FeignClient("服务的名称")**/
-@FeignClient(value = "SPRINGCLOUD-SERVICE-GOODS-01",fallback = GoodsClientFallBack.class)
+@FeignClient(value = "SPRINGCLOUD-SERVICE-GOODS-01",fallbackFactory = GoodsClientFallBack.class)
 public interface GoodsClient {
 
     @RequestMapping(value = "/service/goods")
     public ResultObject goods();
-
 }
