@@ -37,3 +37,10 @@ ribbon:
 feign:
   hystrix:
     enabled: true
+
+# 暴露端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream

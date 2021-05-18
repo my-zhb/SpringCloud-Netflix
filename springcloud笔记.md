@@ -473,3 +473,85 @@ public class GoodsClientFallBack implements FallbackFactory<GoodsClient> {
 ### Hystrix Dashboard
 
 Hystrix仪表盘，就像汽车的仪表盘一样，实时显示汽车的各项数据，Hystrix仪表盘主要用来监控Hystrix的实时运行状态，通过它我们可以看到Hystrix的各项信息，从而快速发现系统中存在的问题进而解决问题。
+
+> 简单使用
+
+```xml
+<dependency>
+	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
+</dependency>
+```
+
+在启动类加上`@EnableHystrixDashboard
+
+`消费者配置`
+
+```xml
+<!-- Hystrix依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+</dependency>
+
+<!-- springboot 提供的监控 actuator-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+
+暴露端点
+
+```yml
+# 暴露端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+```
+
+访问：`http://localhost:8000/actuator/hystrix.stream`,如果一直出现`ping:`，就访问一下hystrix管理的接口。
+
+![image-20210518120115126](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210518120124.png)
+
+如果出现`Unable to connect to Command Metric Stream.`错误 可以尝试配置dashboard
+
+```yml
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "localhost"
+
+最终结果
+
+![image-20210518120256958](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210518120258.png)
+
+### Hystrix Turbine
+
+`Turbine`可以对多个服务进行监控，然后`Hystrix Dashboard`在对其进行监控。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Spring Cloud Zuul
+
+
+
+
+
+## Spring Cloud Config
+
+
+

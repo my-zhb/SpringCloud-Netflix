@@ -41,5 +41,10 @@
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
 
+        <!-- springboot 提供的监控 actuator-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
     </dependencies>
 </project>
