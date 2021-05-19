@@ -1,6 +1,5 @@
 package com.july.springcloud;
 
-import jdk.internal.instrumentation.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,9 +31,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @EnableDiscoveryClient 这个注解等价于@EnableEurekaClient 开启对Eureka
  * @EnableCircuitBreaker 这个注解等价于@EnableHystrix 开放hystrix
  */
-public class PortalApplicatin {
+public class Portal1Applicatin {
     public static void main(String[] args) {
-        SpringApplication.run(PortalApplicatin.class,args);
-        log.info("portal服务（消费者）已启动，端口：8000");
+        SpringApplication.run(Portal1Applicatin.class,args);
+        log.info("portal-1服务（消费者）已启动，端口：8000");
     }
 }

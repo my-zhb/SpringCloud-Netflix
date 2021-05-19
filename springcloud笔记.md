@@ -522,6 +522,7 @@ management:
 hystrix:
   dashboard:
     proxy-stream-allow-list: "localhost"
+```
 
 最终结果
 

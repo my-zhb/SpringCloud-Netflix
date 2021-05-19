@@ -8,7 +8,7 @@ spring:
     username: root
     password: asdgfwgewer341231
   application:
-     name: springcloud-service-goods-01
+     name: springcloud-service-goods
 eureka:
   instance:
     #每间隔2s，向服务端发送一次心跳，证明自己存活
