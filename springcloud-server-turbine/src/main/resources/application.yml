@@ -11,5 +11,5 @@ eureka:
 #配置turbine
 turbine:
   #对那几个hystrix服务聚合汇总，多个服务逗号分隔
-  app-config: springcloud-service-protal-01,springcloud-service-protal-02
+  app-config: springcloud-service-protal
   cluster-name-expression: new String('default')

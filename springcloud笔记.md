@@ -532,21 +532,80 @@ hystrix:
 
 `Turbine`可以对多个服务进行监控，然后`Hystrix Dashboard`在对其进行监控。
 
+> 简单使用
 
+```xml
+<dependencies>
+	<!-- eureka依赖-->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    </dependency>
+    
+    <!-- Hystrix依赖-->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+    </dependency>
+    
+    <!-- springboot 提供的监控 actuator-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    
+    <!-- turbine 依赖 -->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-turbine</artifactId>
+    </dependency>
+</dependencies>
+```
 
+配置内容
 
+```yml
+server:
+  port: 3722
+eureka:
+  client:
+    #不把服务注册到注册中心
+    register-with-eureka: false
+    service-url:
+      #指定服务注册中心的位置
+      defaultZone: http://eureka8761:8761/eureka,http://eureka8762:8762/eureka,http://eureka8763:8763/eureka
 
+#配置turbine
+turbine:
+  #对那几个hystrix服务聚合汇总，多个服务逗号分隔
+  app-config: springcloud-service-protal
+  # 配置成：default 可能会出现报错 
+  cluster-name-expression: new String('default')
+```
 
+把`Dashboard`的地址改成`http://localhost:3722/turbine.stream`
 
-
-
-
-
-
+![2](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210520120547.png)
 
 
 
 ## Spring Cloud Zuul
+
+在微服务中，一个独立的系统被拆分成很多独立的服务，为了确保安全，权限管理也是一个不可避免的问题，如果在每一个服务上都添加上相同的权限验证代码来确保系统不被非法访问，工作量就太大了，二期维护也非常不方便.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
