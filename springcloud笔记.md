@@ -591,19 +591,94 @@ turbine:
 
 ## Spring Cloud Zuul
 
-在微服务中，一个独立的系统被拆分成很多独立的服务，为了确保安全，权限管理也是一个不可避免的问题，如果在每一个服务上都添加上相同的权限验证代码来确保系统不被非法访问，工作量就太大了，二期维护也非常不方便.
+在微服务中，一个独立的系统被拆分成很多独立的服务，为了确保安全，权限管理也是一个不可避免的问题，如果在每一个服务上都添加上相同的权限验证代码来确保系统不被非法访问，工作量就太大了，二期维护也非常不方便.Spring Cloud Zuul即可实现一套API网关服务。Zuul包含了对请求的路由和过滤。
 
+### zuul 路由使用
 
+```xml
+<dependencies>
+    <!-- eureka客户端依赖 -->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    </dependency>
+    
+    <!-- zuul 依赖 -->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+    </dependency>
+</dependencies>
+```
 
+配置文件
 
+```yml
+server:
+  port: 80
+spring:
+  application:
+    name: springcloud-server-zuul
+eureka:
+  instance:
+    #每间隔2s，向服务端发送一次心跳，证明自己存活
+    lease-renewal-interval-in-seconds: 2
+    #告诉服务端，如果我10s没有像你发送心跳，就代表我故障了，将我踢掉
+    lease-expiration-duration-in-seconds: 10
+    #告诉服务端，服务实例以ip作为链接，而不是机器名
+    prefer-ip-address: true
+    #告诉服务端，服务实例的名称
+    instance-id: springcloud-service-zuul
+  client:
+    service-url:
+      #指定服务注册中心的位置
+      defaultZone: http://eureka8761:8761/eureka,http://eureka8762:8762/eureka,http://eureka8763:8763/eureka
+```
 
+启动项目，然后我们就可以通过`http://127.0.0.1/springcloud-service-protal/service/goodsFeginHystrix`去访问接口了
 
+`http://127.0.0.1`（zuul服务本身）
 
+`/springcloud-service-protal`(调用的服务名称)
 
+`/service/goodsFeginHystrix`（接口地址）
 
+### zuul 路由规则
 
+```yml
+zuul:
+  # zuul的超时时间
+  host:
+    connect-timeout-millis: 5000
+  # zuul 路由规则
+  routes:
+    portal:
+      # 服务名称
+      service-id: springcloud-service-protal
+      path: /portal/**
+  # zuul 忽略某个服务名，禁止通过服务名称调用
+  ignored-services: springcloud-service-protal 
+  # *号表示禁止所有服务名调用
+  #ignored-services: *
+  #给所有经过zuul网关接口加一个访问权限，比如 http://127.0.0.1/api/portal/service/goodsFeginHystrix
+  #prefix: /api
+  # 禁止访问的路由
+  ignored-patterns: /**/feign/**
+```
 
+然后就可以通过`http://127.0.0.1/portal/service/goodsFeginHystrix`去访问，因为配置了忽略服务名，上面那种方式就服务在访问了
 
+### zuul 过滤器
+
+过滤器可以做限流、权限验证、记录日志等，过滤器（filter）是zuul的核心组件，zuul中定义了4中标准过滤器类型，这些过滤器对应于请求的典型生命周期。
+
+`PRE`:这种过滤器在请求被路由之前调用，可以利用这种过滤器实现身份验证、在集群中选择请求的微服务、记录调试信息等；
+
+`ROUTING`:这种过滤器将请求路由到微服务，这种过滤器用于构建发送给微服务的请求，并使用Apache HttpClient或Ribbon请求微服务；
+
+`POST`：这种过滤器在路由到微服务之后执行，这种过滤器可用来为响应添加标准的Http Header、收集统计信息和指标、将响应从微服务发送给客户端登；
+
+`ERROR`：在其他阶段发生错误时执行该过滤器。
 
 
 

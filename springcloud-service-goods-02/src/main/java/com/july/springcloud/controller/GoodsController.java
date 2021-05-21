@@ -28,9 +28,9 @@ public class GoodsController {
     public ResultObject goods(){
         System.out.println("/service/goods -->9200 被执行..........");
         List<Goods> goodsList = goodsService.getAllGoods();
-        if(!CollectionUtils.isEmpty(goodsList)){
-            throw new RuntimeException("goods 2 error");
-        }
+//        if(!CollectionUtils.isEmpty(goodsList)){
+//            throw new RuntimeException("goods 2 error");
+//        }
         return new ResultObject(Constant.ZERO, "查询成功", goodsList);
     }
 
