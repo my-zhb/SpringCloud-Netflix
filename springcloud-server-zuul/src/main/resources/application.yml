@@ -18,7 +18,6 @@ eureka:
       #指定服务注册中心的位置
       defaultZone: http://111.231.207.228:8761/eureka,http://111.231.207.228:8762/eureka,http://111.231.207.228:8763/eureka
 
-
 zuul:
   # zuul的超时时间
   host:
@@ -29,8 +28,15 @@ zuul:
       service-id: springcloud-service-protal
       path: /portal/**
   # zuul 忽略某个服务名，禁止通过服务名称调用，*号表示禁止所有服务名调用
-  ignored-services: *
+  ignored-services: '*'
   #给所有经过zuul网关接口加一个访问权限,比如 http://127.0.0.1/api/portal/service/goodsFeginHystrix
   prefix: /api
   # 禁止访问的路由
   ignored-patterns: /**/feign/**
+  #禁用自定义拦截器，LogFilter为拦截器名称
+  LogFilter:
+    route:
+      disable: true
+  SendErrorFilter:
+    route:
+      disable: true

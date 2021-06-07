@@ -593,7 +593,7 @@ turbine:
 
 在微服务中，一个独立的系统被拆分成很多独立的服务，为了确保安全，权限管理也是一个不可避免的问题，如果在每一个服务上都添加上相同的权限验证代码来确保系统不被非法访问，工作量就太大了，二期维护也非常不方便.Spring Cloud Zuul即可实现一套API网关服务。Zuul包含了对请求的路由和过滤。
 
-### zuul 路由使用
+### Zuul 路由使用
 
 ```xml
 <dependencies>
@@ -643,7 +643,7 @@ eureka:
 
 `/service/goodsFeginHystrix`（接口地址）
 
-### zuul 路由规则
+### Zuul 路由规则
 
 ```yml
 zuul:
@@ -659,7 +659,7 @@ zuul:
   # zuul 忽略某个服务名，禁止通过服务名称调用
   ignored-services: springcloud-service-protal 
   # *号表示禁止所有服务名调用
-  #ignored-services: *
+  #ignored-services: '*'
   #给所有经过zuul网关接口加一个访问权限，比如 http://127.0.0.1/api/portal/service/goodsFeginHystrix
   #prefix: /api
   # 禁止访问的路由
@@ -668,7 +668,7 @@ zuul:
 
 然后就可以通过`http://127.0.0.1/portal/service/goodsFeginHystrix`去访问，因为配置了忽略服务名，上面那种方式就服务在访问了
 
-### zuul 过滤器
+### Zuul 过滤器
 
 过滤器可以做限流、权限验证、记录日志等，过滤器（filter）是zuul的核心组件，zuul中定义了4中标准过滤器类型，这些过滤器对应于请求的典型生命周期。
 
@@ -678,7 +678,91 @@ zuul:
 
 `POST`：这种过滤器在路由到微服务之后执行，这种过滤器可用来为响应添加标准的Http Header、收集统计信息和指标、将响应从微服务发送给客户端登；
 
-`ERROR`：在其他阶段发生错误时执行该过滤器。
+`ERROR`：在其他阶段发生错误时执行该过滤器
+
+### 自定义过滤器
+
+```java
+@Component
+public class LogFilter extends ZuulFilter {
+
+    /**
+     * 设置过滤器状态 -> 在路由时执行
+     * @return
+     */
+    @Override
+    public String filterType() {
+        /**
+         *  出现错误
+         *  public static final String ERROR_TYPE = "error";
+         *  路由之后执行
+         *  public static final String POST_TYPE = "post";
+         *  路由之前执行
+         *  public static final String PRE_TYPE = "pre";
+         *  路由
+         *  public static final String ROUTE_TYPE = "route";
+         */
+        return FilterConstants.ROUTE_TYPE;
+    }
+
+    /**
+     * 设置路由顺序 （顺序小的先执行）
+     * @return
+     */
+    @Override
+    public int filterOrder() {
+        return FilterConstants.PRE_DECORATION_FILTER_ORDER;
+    }
+
+    /**
+     *  设置是否启用过滤器
+     *  true 启用  反之
+     * @return
+     */
+    @Override
+    public boolean shouldFilter() {
+        return true;
+    }
+
+    /**
+     * 在路由时执行run方法 具体逻辑实现
+     * @return
+     * @throws ZuulException
+     */
+    @Override
+    public Object run() throws ZuulException {
+        RequestContext currentContext = RequestContext.getCurrentContext();
+        HttpServletRequest request = currentContext.getRequest();
+        String serverName = request.getServerName();
+        System.out.println("访问地址：" + request.getRequestURI());
+        return null;
+    }
+}
+```
+
+如果有多个过滤器我们可以通过配置文件的方式来更改它的状态
+
+```yml
+zuul:
+  #过滤器名称
+  LogFilter:
+    route:
+      disable: true
+```
+
+### Zuul异常处理
+
+首先先禁用掉Zuul自带的`SendErrorFilter`过滤器
+
+```yml
+zuul:
+  #过滤器名称
+  SendErrorFilter:
+    route:
+      disable: true
+```
+
+
 
 
 

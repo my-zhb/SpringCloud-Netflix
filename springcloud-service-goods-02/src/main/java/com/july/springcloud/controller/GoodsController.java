@@ -42,6 +42,7 @@ public class GoodsController {
      */
     @RequestMapping(value="/service/goods/{id}", method = RequestMethod.GET)
     public ResultObject goodsDetail(@PathVariable("id") Integer id) {
+        int number = 10/0;
         System.out.println("/service/goods/{id} -->9100 被执行..........id=" + id);
         Goods goods = goodsService.getGoodsById(id);
         return new ResultObject(Constant.ZERO, "查询成功", goods);
