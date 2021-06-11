@@ -750,7 +750,7 @@ zuul:
       disable: true
 ```
 
-### Zuul异常处理
+### Zuul 异常处理
 
 首先先禁用掉Zuul自带的`SendErrorFilter`过滤器
 
@@ -762,15 +762,110 @@ zuul:
       disable: true
 ```
 
+### Zuul 熔断
 
+在zuul服务里面创建熔断,并实现`FallbackProvider`
 
+```java
+@Component
+public class ZuulFallback implements FallbackProvider {
 
+    /**
+     * 配置对那些服务进行使用
+     * @return
+     */
+    @Override
+    public String getRoute() {
+        return "*";
+    }
 
+    @Override
+    public ClientHttpResponse fallbackResponse(String route, Throwable cause) {
+        return new ClientHttpResponse() {
 
+            //设置headers
+            @Override
+            public HttpHeaders getHeaders() {
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Content-Type","text/html; charset=UTF-8");
+                return headers;
+            }
+
+            //设置状态码
+            @Override
+            public HttpStatus getStatusCode() throws IOException {
+                return HttpStatus.BAD_REQUEST;
+            }
+
+            //设置响应体
+            @Override
+            public InputStream getBody() throws IOException {
+                return new ByteArrayInputStream("服务正在维护,请稍后再试".getBytes());
+            }
+
+            //设置状态码的值，如200，400等
+            @Override
+            public int getRawStatusCode() throws IOException {
+                return HttpStatus.BAD_REQUEST.value();
+            }
+
+            //设置状态的文本
+            @Override
+            public String getStatusText() throws IOException {
+                return HttpStatus.BAD_REQUEST.getReasonPhrase();
+            }
+
+            @Override
+            public void close() {
+
+            }
+        };
+    }
+}
+
+```
 
 
 
 ## Spring Cloud Config
 
+>  什么是配置中心？
 
+1.传统配置方式：配置信息分散到系统各个角落，配置文件和代码中。
+
+2.集中式配置中心：将应用系统中对配置信息的管理作为一个新的应用模块，进行集中管理，并且提供额外功能。
+
+3.分布式配置中心：在分布式、微服务架构中，独立的配置中心服务。
+
+> 为什么需要分布式配置中心？
+
+在分布式微服务体系中，服务的数量以及配置信息日益增多，比如个在服务器参数配置、各种数据库访问参数配置、各种环境下配置信息的不同、配置信息修改之后实时生效等，传统的配置文件方式或者将配置信息存放于数据库中的方式就无法满足开发人员对配置管理的要求 例如：
+
+安全性：配置跟随源代码在代码库中，容易造成配置泄露；
+
+时效性：修改配置，需要重启服务才能生效；
+
+局限性：无法支持多态调整，比如日志开关、功能开关；
+
+> 常用的分布式配置中心框架
+
+`Apollo`：携程框架部门研发的分布式配置中心，能够集中化管理应用不同环境、不同集群的配置，配置修改后能够实时推送到应用端，并且具备规范的权限、流程治理等特性，适用于微服务配置管理场景；
+
+`diamond`:淘宝开源的持久配置中心，支持各种持久信息（比如各种规则，数据库配置等）的发布和订阅；（更新稍微落后）
+
+`XDiamond`:全局配置中心，存储应用的配置项目，解决配置混乱分散的问题；
+
+`Qconf`：奇虎360内部分布式配置管理工具，用来代替传统的配置文件，使得配置信息和程序代码分离，同时配置变化能够实时同步到客户端，而且保证用户高效读取配置；
+
+`Disconf`：百度的分布式配置管理平台；
+
+`Spring Cloud Config`：Spring Cloud微服务开发的配置中心，提供服务端和客户端支持；
+
+`Spring Cloud alibaba nacos`：Spring Cloud Alibaba下的分布式配置中心;
+
+> 什么是Spring Cloud Config?
+
+Spring Cloud Config是一个解决分布式系统的配置管理方案，它包含Client和Server两部分，Server提供配置文件的存储、以接口的形式将配置文件的内容提供出去，Client通过接口获取数据、并依据此数据初始化自己的应用。Spring Cloud使用git或者svn、也可以是本地存放配置文件，默认情况下使用git；
+
+> Spring Cloud Config工作原理
 
