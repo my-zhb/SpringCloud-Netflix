@@ -7,11 +7,7 @@ spring:
     config:
       server:
         git:
-          # ²Ö¿âµØÖ·
-          uri: https://gitee.com/verycat/springcloud.git
-          # ²Ö¿âÄ¿Â¼
+          uri: https://github.com/my-zhb/SpringCloud-RemotelyConfig.git
           search-paths: config-server
-          # ÕËºÅ
-          username: verycat
-          # ÃÜÂë
-          password: 123456.
+          username: myiszhb@gmail.com
+          password: 2020Fate!
