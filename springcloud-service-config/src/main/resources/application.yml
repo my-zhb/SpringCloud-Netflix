@@ -1,0 +1,17 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: springcloud-service-config
+  cloud:
+    config:
+      server:
+        git:
+          # ²Ö¿âµØÖ·
+          uri: https://gitee.com/verycat/springcloud.git
+          # ²Ö¿âÄ¿Â¼
+          search-paths: config-server
+          # ÕËºÅ
+          username: verycat
+          # ÃÜÂë
+          password: 123456.
