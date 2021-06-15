@@ -869,3 +869,16 @@ Spring Cloud Config是一个解决分布式系统的配置管理方案，它包�
 
 > Spring Cloud Config工作原理
 
+
+
+![image-20210615135728500](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210615135737.png)
+
+1、首先需要一个远程Git仓库，平时测试可以使用GitHub，在实际生成环境中，需要自己搭建一个Git服务器，远程Git仓库的主要作用是用来保存我们的配置文件；
+
+2、除了远程Git仓库之外，我们还需要一个本地Git仓库，每当`Config Server`访问远程Git仓库时，都会克隆一份到本地，这样当远程仓库无法连接时，就直接使用本地存储的配置信息；
+
+3、微服务A、微服务B则是我们的具体应用，这些应用在启动的时候会从`Config Server`中获取相应的配置信息；
+
+4、当微服务A、微服务B尝试从Config Server中加载配置信息的时候，`Config Server`会先通过`git clone`命令克隆一份配置文件到本地保存；
+
+5、由于配置文件是存储在Git仓库中，所以配置文件天然具有版本管理功能；

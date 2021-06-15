@@ -46,8 +46,9 @@
         <module>../springcloud-service-goods-02</module>
         <module>../springcloud-service-portal-01</module>
         <module>../springcloud-service-portal-02</module>
-        <module>../springcloud-server-dashboard</module>
-        <module>../springcloud-server-zuul</module>
+        <module>../springcloud-service-dashboard</module>
+        <module>../springcloud-service-turbine</module>
+        <module>../springcloud-service-zuul</module>
     </modules>
 
     <dependencyManagement>

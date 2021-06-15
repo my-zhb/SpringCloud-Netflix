@@ -13,32 +13,19 @@
         <relativePath>../springcloud-service-parent-01/pom.xml</relativePath>
     </parent>
 
-    <artifactId>springcloud-server-turbine</artifactId>
+    <artifactId>springcloud-service-zuul</artifactId>
     <version>1.0.0</version>
 
     <dependencies>
-        <!-- eureka依赖-->
+        <!-- eureka客户端依赖 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
-
-        <!-- Hystrix依赖-->
+        <!-- zuul 依赖 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
-
-        <!-- springboot 提供的监控 actuator-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <!-- turbine 依赖 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-turbine</artifactId>
+            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -2,7 +2,7 @@ server:
   port: 80
 spring:
   application:
-    name: springcloud-server-zuul
+    name: springcloud-service-zuul
 eureka:
   instance:
     #每间隔2s，向服务端发送一次心跳，证明自己存活
