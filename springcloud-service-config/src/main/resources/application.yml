@@ -7,11 +7,11 @@ spring:
     config:
       server:
         git:
-          # ²Ö¿âµØÖ·
+          # ï¿½Ö¿ï¿½ï¿½Ö·
           uri: https://gitee.com/verycat/springcloud.git
-          # ²Ö¿âÄ¿Â¼
+          # ï¿½Ö¿ï¿½Ä¿Â¼
           search-paths: config-server
-          # ÕËºÅ
+          # ï¿½Ëºï¿½
           username: verycat
-          # ÃÜÂë
+          # ï¿½ï¿½ï¿½ï¿½
           password: 123456.
