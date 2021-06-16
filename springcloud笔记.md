@@ -882,3 +882,97 @@ Spring Cloud Config是一个解决分布式系统的配置管理方案，它包�
 4、当微服务A、微服务B尝试从Config Server中加载配置信息的时候，`Config Server`会先通过`git clone`命令克隆一份配置文件到本地保存；
 
 5、由于配置文件是存储在Git仓库中，所以配置文件天然具有版本管理功能；
+
+### 构建服务端
+
+1、创建一个远程仓库[GitHub](https://github.com/)或者[码云](https://gitee.com/),我们吧配置文件上传上去
+
+![](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210616160730.png)
+
+2、搭建SpringCloud Config服务
+
+引入依赖
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-config-server</artifactId>
+    </dependency>
+</dependencies>
+```
+
+`@EnableConfigServer`开始config
+
+```java
+@Slf4j
+@EnableConfigServer
+@SpringBootApplication
+public class ConfigApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ConfigApplication.class, args);
+        log.info("Spring Cloud Config服务 已启动，端口：8888");
+    }
+}
+```
+
+配置文件
+
+```yml
+server:
+  port: 8888
+spring:
+  application:
+    name: springcloud-service-config
+  cloud:
+    config:
+      server:
+        git:
+          # 仓库地址
+          uri: https://github.com/my-zhb/SpringCloud-RemotelyConfig.git
+          # 仓库目录
+          search-paths: config-server
+          # 仓库账号
+          username: myiszhb@gmail.com
+          # 仓库密码
+          password: 123456
+```
+
+
+
+### Config映射规则
+
+{applcation} 表示配置文件的名字，对应的配置文件即applicaton；
+
+{profile} 表示环境，有dev、test、online及默认；
+
+{label} 表示分支，默认放在master分支；
+
+```tex
+第一种：
+/{application}/{profile}[/{label}]/
+http://localhost:8888/application/dev/master
+
+第二种：
+/{application}-{profile}.properties
+http://localhost:8888/application-dev.yml
+
+第三种：
+/{label}/{application}-{profile}.properties
+http://localhost:8888/master/application-dev.yml
+```
+
+
+
+### 构建客户端
+
+
+
+
+
+
+
+
+
+`bootstrap.yml`文件，SpringCloud有一个“引导上下文”的概念，这是主应用程序的父上下文。引导上下文负责从配置服务器加载配置属性，以及解密外部配置文件中的属性和主应用程序加载application中的属性不同，引导上下文加载（bootstrap）中的属性，配置bootstrap.*中的属性有更高的优先级，因此默认情况下它们不能本本地配置覆盖；
+
