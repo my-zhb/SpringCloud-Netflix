@@ -7,11 +7,11 @@ spring:
     config:
       server:
         git:
-          # �ֿ��ַ
-          uri: https://gitee.com/verycat/springcloud.git
-          # �ֿ�Ŀ¼
+          # 仓库地址
+          uri: https://github.com/my-zhb/SpringCloud-RemotelyConfig.git
+          # 仓库目录
           search-paths: config-server
-          # �˺�
-          username: verycat
-          # ����
-          password: 123456.
+          # 仓库账号
+          username: myiszhb@gmail.com
+          # 仓库密码
+          password: 2020Fate!
