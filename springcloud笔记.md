@@ -966,13 +966,98 @@ http://localhost:8888/master/application-dev.yml
 
 ### 构建客户端
 
+引入包
 
+```xml
+<!-- 引入spring cloud config 客户端-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-config</artifactId>
+</dependency>
+```
 
+在`resources`目录下创建`bootstrap.(properties或者yml)`,文件名称必须是`bootstrap`
 
-
-
-
-
+```yml
+spring:
+  cloud:
+    config:
+      profile: dev
+      #分支
+      label: master
+      #地址
+      uri: http://localhonst:8888/
+```
 
 `bootstrap.yml`文件，SpringCloud有一个“引导上下文”的概念，这是主应用程序的父上下文。引导上下文负责从配置服务器加载配置属性，以及解密外部配置文件中的属性和主应用程序加载application中的属性不同，引导上下文加载（bootstrap）中的属性，配置bootstrap.*中的属性有更高的优先级，因此默认情况下它们不能本本地配置覆盖；
 
+
+
+
+
+
+
+### 信息加密
+
+
+
+
+
+
+
+### 动态刷新
+
+#### 局部刷新
+
+Spring boot的actuator提供了一个刷新端点/refresh
+
+```xml
+<!-- springboot 提供的监控 actuator-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId></dependency>
+```
+
+在远程文件配置暴露端点
+
+```yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+```
+
+在resources创建bootstrap.yml配置config
+
+```yml
+spring:
+  cloud:
+    config:
+      profile: dev
+      label: master
+      uri: http://127.0.0.1:8888/
+```
+
+在有引用配置的类上加上注解`@RefreshScope`
+
+```java
+@RefreshScope
+@RestController
+public class GoodsController {
+
+    @Value("${info.address}")
+    private String address;
+    
+    @RequestMapping(value = "/config", method = RequestMethod.GET)
+    public Object config() {
+        return address;
+    }
+}
+```
+
+进行测试，如果修改了远程文件需要执行`ip:端口/actuator/refresh`，新的配置才会生效，这方法不建议使用，因为很麻烦；
+
+#### 全局刷新
+
+Spring Cloud Bus就可以实现配置的自动刷新，Spring Cloud Bus使用轻量级的消息代理/总线（例如RaboitMQ,Kafka等）广播状态的更改（例如配置的更新）或者其他的管理指令，可以将Spring Cloud Bus想象成一个分布式的Spring Boot Actuator;

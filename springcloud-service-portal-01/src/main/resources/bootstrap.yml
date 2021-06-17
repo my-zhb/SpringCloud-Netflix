@@ -2,7 +2,5 @@ spring:
   cloud:
     config:
       profile: dev
-      #分支
       label: master
-      #地址
-      uri: http://localhonst:8888/
+      uri: http://127.0.0.1:8888/

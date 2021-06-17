@@ -6,6 +6,8 @@ import com.july.springcloud.model.ResultObject;
 import com.july.springcloud.service.GoodsClient;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 
+@RefreshScope
 @RestController
 public class GoodsController {
 
@@ -32,6 +35,9 @@ public class GoodsController {
 
     @Resource
     private RestTemplate restTemplate;
+
+    @Value("${info.address}")
+    private String address;
 
     /**
      * Fegin查询所有商品
@@ -101,5 +107,10 @@ public class GoodsController {
     public ResultObject goodsFeginHystrix() {
         System.out.println("/service/goodsHystrix -->8080 被执行..........");
         return goodsClient.goods();
+    }
+
+    @RequestMapping(value = "/config", method = RequestMethod.GET)
+    public Object config() {
+        return address;
     }
 }
