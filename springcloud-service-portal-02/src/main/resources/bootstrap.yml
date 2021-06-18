@@ -1,6 +1,6 @@
 spring:
   cloud:
     config:
-      profile: dev8000
+      profile: dev8001
       label: master
       uri: http://127.0.0.1:8888/

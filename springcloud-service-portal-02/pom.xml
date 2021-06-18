@@ -22,6 +22,11 @@
 
     <dependencies>
 
+        <!-- 引入spring cloud config 客户端-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
         <!--加入commons模块 依赖-->
         <dependency>
             <groupId>com.july.springcloud</groupId>

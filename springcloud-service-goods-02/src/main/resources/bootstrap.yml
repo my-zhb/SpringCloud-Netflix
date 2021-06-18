@@ -1,6 +1,8 @@
 spring:
   cloud:
     config:
-      profile: dev8000
+      profile: dev9200
+      #分支
       label: master
+      #地址
       uri: http://127.0.0.1:8888/
