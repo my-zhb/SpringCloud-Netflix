@@ -11,9 +11,9 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 @Slf4j
 @SpringBootApplication
 @EnableEurekaClient
-public class GoodsApplication {
+public class GoodsApplication9200 {
     public static void main(String[] args) {
-        SpringApplication.run(GoodsApplication.class,args);
-        log.info("goods服务（生产者）已启动，端口：9100");
+        SpringApplication.run(GoodsApplication9200.class,args);
+        log.info("goods服务（生产者）已启动，端口：9200");
     }
 }

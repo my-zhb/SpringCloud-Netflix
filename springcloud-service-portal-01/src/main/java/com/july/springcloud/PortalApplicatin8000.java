@@ -31,9 +31,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @EnableDiscoveryClient 这个注解等价于@EnableEurekaClient 开启对Eureka
  * @EnableCircuitBreaker 这个注解等价于@EnableHystrix 开放hystrix
  */
-public class Portal2Applicatin {
+public class PortalApplicatin8000 {
     public static void main(String[] args) {
-        SpringApplication.run(Portal2Applicatin.class,args);
-        log.info("portal-2服务（消费者）已启动，端口：8001");
+        SpringApplication.run(PortalApplicatin8000.class,args);
+        log.info("portal-1服务（消费者）已启动，端口：8000");
     }
 }
