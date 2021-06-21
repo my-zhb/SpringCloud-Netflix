@@ -16,3 +16,12 @@ eureka:
     service-url:
       #指定服务注册中心的位置
       defaultZone: http://eureka8762:8762/eureka,http://eureka8763:8763/eureka
+      # 配置访问config的账号密码
+      username: myiszhb
+      password: 123456
+# 配置访问的账号密码
+spring:
+  security:
+    user:
+      name: myiszhb
+      password: 123456

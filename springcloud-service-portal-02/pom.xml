@@ -22,16 +22,17 @@
 
     <dependencies>
 
-        <!-- 引入spring cloud config 客户端-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-        </dependency>
         <!--加入commons模块 依赖-->
         <dependency>
             <groupId>com.july.springcloud</groupId>
             <artifactId>springcloud-service-commons-01</artifactId>
             <version>1.0.0</version>
+        </dependency>
+
+        <!-- 引入spring cloud config 客户端-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
 
         <!-- eureka依赖-->
@@ -45,7 +46,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
-
+        <!-- 引入springcloud bus-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+        </dependency>
         <!-- springboot 提供的监控 actuator-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

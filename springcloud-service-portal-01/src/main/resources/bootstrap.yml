@@ -1,12 +1,23 @@
 server:
   port: 8000
-eureka:
-  instance:
-    #告诉服务端，服务实例的名称
-    instance-id: springcloud-service-protal-01
 spring:
   cloud:
     config:
       profile: devportal
       label: master
-      uri: http://127.0.0.1:8888/
+#      uri: http://127.0.0.1:8888/
+      # 通过注册中心去拿
+      discovery:
+        enabled: true
+        service-id: springcloud-service-config
+      # 配置访问config的账号密码
+      username: myiszhb
+      password: 123456
+eureka:
+  instance:
+    #告诉服务端，服务实例的名称
+    instance-id: springcloud-service-protal-01
+  client:
+    service-url:
+      #指定服务注册中心的位置
+      defaultZone: http://111.231.207.228:8761/eureka,http://111.231.207.228:8762/eureka,http://111.231.207.228:8763/eureka

@@ -145,6 +145,59 @@ eureka:
 
    只要服务没有挂掉，还能调用。因为服务注册到Eureka之后会被缓存到本地，所以Eureka宕机还是可以继续调用的。
 
+### Eureka安全认证
+
+一般情况下Eureka都会在一个内网环境中，但避免不了在某些项目中需要让其他外网服务注册到Eureka,这个时候就有必要让Eureka增加一套安全认证机制；
+
+```xml
+<!--引入security安全认证依赖-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+
+配置eureka服务端
+
+```yml
+# 配置访问的账号密码
+spring:
+  security:
+    user:
+      name: myiszhb
+      password: 123456
+```
+
+然后在eureka服务端编写EurekaSecurityConfig,重写configure方法，把csrf劫持置为不可以，让服务能被接收和注册
+
+```java
+@Configuration
+@EnableWebSecurity
+public class EurekaSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception{
+        http.csrf().disable();
+        super.configure(http);
+    }
+}
+```
+
+eureka客户端配置
+
+`账号:密码@ip:端口`
+
+```yml
+eureka:
+  client:
+    service-url:
+      #指定服务注册中心的位置
+      defaultZone: http://myiszhb:123456@127.0.0.1:8761/eureka,http://myiszhb:123456@127.0.0.1:8762/eureka,http://myiszhb:123456@127.0.0.1:8763/eureka
+
+```
+
+
+
 ## Spring Cloud Ribbon
 
 > Ribbon是什么？
@@ -997,7 +1050,7 @@ spring:
 
 
 
-### 信息加密
+### Config信息加密
 
 
 
@@ -1005,7 +1058,7 @@ spring:
 
 
 
-### 动态刷新
+### Config动态刷新
 
 #### 局部刷新
 
@@ -1015,7 +1068,8 @@ Spring boot的actuator提供了一个刷新端点/refresh
 <!-- springboot 提供的监控 actuator-->
 <dependency>
     <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-actuator</artifactId></dependency>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
 ```
 
 在远程文件配置暴露端点
@@ -1061,3 +1115,256 @@ public class GoodsController {
 #### 全局刷新
 
 Spring Cloud Bus就可以实现配置的自动刷新，Spring Cloud Bus使用轻量级的消息代理/总线（例如RaboitMQ,Kafka等）广播状态的更改（例如配置的更新）或者其他的管理指令，可以将Spring Cloud Bus想象成一个分布式的Spring Boot Actuator;
+
+![image-20210621144531140](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210621144539.png)
+
+> 配置springcloud bus
+
+引入依赖
+
+```xml
+   <!-- 引入springcloud bus-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+</dependency>
+<!-- 引入spring-boot-starter-actuator-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+
+bootstrap.yml配置
+
+```yml
+spring:
+  application:
+    name: springcloud-service-config
+  cloud:
+    config:
+      server:
+        git:
+          # 仓库地址
+          uri: https://github.com/my-zhb/SpringCloud-RemotelyConfig.git
+          # 扫描仓库目录
+          search-paths: config-server/goods,config-server/portal
+          # 仓库账号
+          username: myiszhb@gmail.com
+          # 仓库密码
+          password: 123456
+    # 开启spring cloud bus，默认开启
+    bus:
+      enabled: true
+  # 配置rabbitmq
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: myiszhb
+    password: 123456
+# 打开所有的web访问端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+```
+
+配置客户端
+
+```xml
+<!-- 引入spring cloud config 客户端-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-config</artifactId>
+</dependency>
+<!-- 引入springcloud bus-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+</dependency>
+<!-- springboot 提供的监控 actuator-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+
+bootstrap.yml配置
+
+```yml
+server:
+  port: 8001
+spring:
+  cloud:
+    config:
+      profile: devportal
+      label: master
+      uri: http://127.0.0.1:8888/
+```
+
+git远程服务配置
+
+```yml
+spring:
+  application:
+    name: springcloud-service-protal
+  # 配置rabbitmq
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: myiszhb
+    password: 123456
+
+# 暴露端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+# 测试局部动态刷新
+info:
+  address: myiszhb333
+```
+
+我们修改了配置文件通过调用`http://127.0.0.1:8888/actuator/bus-refresh`链接进行刷新,端口是你config服务器的端口。
+
+### Config高可用
+
+有了配置中心之后，其他的微服务都是从配置中心上读取配置信息，此时配中心就至关重要了，在真实的项目环境中，Spring Cloud Config配置中心难免会出现各种问题，此时就需要考虑Spring Cloud Config的高可用机制；
+
+Spring Cloud Config的高可用机制解决方式，把Spring Cloud Config注册到Eureka就可以了，此时用户访问的时候不是直接从配置中心获取配置信息，而是先通过eureka中获取配置中心的地址，然后在从配置中心获取具体服务的配置信息；
+
+> 简单使用
+
+config 服务端搭建
+
+配置N份application-config8887.yml，application-config8888.yml，application-config8889.yml 端口以及`instance-id`对应更改。
+
+```yml
+server:
+  port: 8887
+spring:
+  application:
+    name: springcloud-service-config
+  cloud:
+    config:
+      server:
+        git:
+          # 仓库地址
+          uri: https://gitee.com/myiszhb/spring-cloud-remotely-config.git
+          # 仓库目录
+          search-paths: config-server/goods,config-server/portal
+          # 仓库账号
+          username: myiszhb@gmail.com
+          # 仓库密码
+          password: 123456
+    # 开启spring cloud bus，默认开启
+    bus:
+      enabled: true
+  # 配置rabbitmq
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: myiszhb
+    password: 123456
+# 打开所有的web访问端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+eureka:
+  instance:
+    #每间隔2s，向服务端发送一次心跳，证明自己存活
+    lease-renewal-interval-in-seconds: 2
+    #告诉服务端，如果我10s没有像你发送心跳，就代表我故障了，将我踢掉
+    lease-expiration-duration-in-seconds: 10
+    #告诉服务端，服务实例以ip作为链接，而不是机器名
+    prefer-ip-address: true
+    #告诉服务端，服务实例的名称 唯一
+    instance-id: springcloud-service-config-8887
+  client:
+    service-url:
+      #指定服务注册中心的位置
+      defaultZone: http://127.0.0.1:8761/eureka,http://127.0.0.1:8762/eureka,http://127.0.0.1:8763/eureka
+```
+
+config 客户端配置
+
+这里是bootstrap的配置
+
+```yml
+server:
+  port: 8001
+spring:
+  cloud:
+    config:
+      profile: devportal
+      # 分支
+      label: master
+      #      uri: http://127.0.0.1:8888/
+      # 通过注册中心去拿
+      discovery:
+        enabled: true
+        # 服务的名称
+        service-id: springcloud-service-config
+eureka:
+  instance:
+    #告诉服务端，服务实例的名称
+    instance-id: springcloud-service-protal-01
+  client:
+    service-url:
+      #指定服务注册中心的位置
+      defaultZone: http://127.0.0.1:8761/eureka,http://127.0.0.1:8762/eureka,http://127.0.0.1:8763/eureka
+```
+
+搭建完毕
+
+![image-20210621155246732](https://cdn.jsdelivr.net/gh/my-zhb/CDN/img/20210621155248.png)
+
+`还可以使用nginx进行高可用配置`
+
+### Config安全认证
+
+在config服务端添加依赖
+
+```yml
+<!--引入security安全认证依赖-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+
+config服务端配置文件
+
+```yml
+spring:
+  # 配置安全认证
+  security:
+    user:
+      name: myiszhb
+      password: 123456
+```
+
+然后配置客户文件
+
+```yml
+spring:
+  cloud:
+    config:
+      # 配置访问config的账号密码
+      username: myiszhb
+      password: 123456
+```
+
+这样客户端去配置中心取文件就需要验证。
+
+
+
+## Spring Cloud Sleuth
+
+
+
