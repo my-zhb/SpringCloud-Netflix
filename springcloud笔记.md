@@ -1360,7 +1360,38 @@ spring:
       password: 123456
 ```
 
-这样客户端去配置中心取文件就需要验证。
+配置
+
+```java
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    /**
+     * 高版本的丢弃了
+     *
+     * security:
+     *   basic:
+     *    enabled: true
+     *
+     * 配置，应该使用以下方式开启
+     *
+     * @param http
+     * @throws Exception
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Configure HttpSecurity as needed (e.g. enable. http basic).
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
+        http.csrf().disable();
+        //注意：为了可以使用 http://${user}:${password}@${host}:${port}/eureka/ 这种方式登录,所以必须是httpBasic,
+        // 如果是form方式,不能使用url格式登录
+        http.authorizeRequests().anyRequest().authenticated().and().httpBasic();
+    }
+}
+```
+
+这样客户端去配置中心取文件就需要验证,刷新配置为`http://username:password@ip:port/actuator/bus-refresh`
 
 
 
